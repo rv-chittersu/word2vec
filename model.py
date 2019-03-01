@@ -6,10 +6,10 @@ config.gpu_options.allow_growth = True
 
 
 def get_model(neg_samples, embedding_dim, vocab_size):
-    input_token = tf.placeholder(tf.int32, shape=[1], name='input_token')
-    label = tf.placeholder(tf.int32, shape=[1], name='label')
-    neg_sample_enc = tf.placeholder(tf.int32, shape=[neg_samples], name='negative_samples')
-    probabilities = tf.placeholder(tf.float32, shape=[neg_samples, 1], name='probabilities')
+    input_token = tf.placeholder(tf.int32, shape=[1], name='input_token')  # (1)
+    label = tf.placeholder(tf.int32, shape=[1], name='label')  # (1)
+    neg_sample_enc = tf.placeholder(tf.int32, shape=[neg_samples], name='negative_samples')  # (neg_size)
+    probabilities = tf.placeholder(tf.float32, shape=[neg_samples, 1], name='probabilities')  # (neg_size,1)
 
     with tf.variable_scope('word2vec'):
         embedding = tf.Variable(tf.random_uniform([vocab_size, embedding_dim], -1.0, 1.0))  # (v_size, e_size)
