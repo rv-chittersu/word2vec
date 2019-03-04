@@ -23,7 +23,8 @@ def create_vocabulary():
 
     vocabulary = {}
     for index, key in enumerate(tokens.keys()):
-        vocabulary[key] = (index, tokens[key])
+        if tokens[key] > 1:
+            vocabulary[key] = (index, tokens[key])
     return vocabulary, size, count
 
 
