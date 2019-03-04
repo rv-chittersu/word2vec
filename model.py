@@ -53,26 +53,32 @@ def run(input_enc, label, neg_samples, prob, embeddings, loss, data_handler: Dat
     with tf.Session(config=config) as session:
         session.run(init)
 
-        while True:
-            data = data_handler.get_next()
-            if data is None:
-                # report final results
-                break
-            for entry in data:
-                feed_dict = {
-                    input_enc: entry['word'],
-                    label: entry['label'],
-                    neg_samples: entry['neg'],
-                    prob: entry['prob']
-                }
+        for i in range(0, 3):
+            print("==========================")
+            print("Starting epoch:" + str(i))
+            print("==========================")
+            while True:
+                data = data_handler.get_next()
+                if data is None:
+                    # report final results
+                    data_handler.reset()
+                    break
+                for entry in data:
+                    feed_dict = {
+                        input_enc: entry['word'],
+                        label: entry['label'],
+                        neg_samples: entry['neg'],
+                        prob: entry['prob']
+                    }
 
-                training_step += 1
+                    training_step += 1
 
-                _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
-                average_loss += loss_val
+                    _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
+                    average_loss += loss_val
 
-                if training_step % 10000 == 0:
-                    print("Avg.loss@" + str(training_step) + " - " + str(average_loss/training_step))
+                    if training_step % 10000 == 0:
+                        print("Avg.loss@" + str(training_step) + " - " + str(average_loss))
+                        average_loss = 0
 
         final_embeddings = embeddings.eval()
         return final_embeddings

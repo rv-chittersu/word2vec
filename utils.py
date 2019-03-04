@@ -1,9 +1,13 @@
 import nltk
 import re
 from nltk.corpus import reuters
+from nltk.corpus import stopwords
+stopWords = set(stopwords.words('english'))
 
 
 def is_valid_token(word):
+    if word in stopWords:
+        return False
     if word == "lt":
         return False
     if len(word) < 2:

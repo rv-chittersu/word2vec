@@ -39,6 +39,12 @@ class DataHandler:
 
         print("Total files " + str(self.document_count))
 
+    def reset(self):
+        self.document_index = 0
+        self.sentence_index = 0
+        self.word_index = 0
+        self.load_document()
+
     def generate_reverse_vocab(self):
         self.reverse_vocab = {}
         vocab_list = self.vocabulary.keys()

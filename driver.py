@@ -72,7 +72,7 @@ if __name__ == '__main__':
     dim = 60
     window = 5
     learning_rate = 0.5
-    negative_samples = 30
+    negative_samples = 120
 
     print("Defining Model")
     input_enc, label, neg_samples, prob, embeddings, loss = get_model(negative_samples, dim, v_size)
@@ -83,4 +83,4 @@ if __name__ == '__main__':
     print("Starting training")
     final_embeddings = run(input_enc, label, neg_samples, prob, embeddings, loss, data_handler)
 
-    np.savetxt('emb.out', final_embeddings, delimiter=',')
+    np.savetxt('emb.1.w_5.stop_words.neg_120.out', final_embeddings, delimiter=',')
