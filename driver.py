@@ -8,7 +8,7 @@ def create_vocabulary():
     tokens = {}
     size = 0
     count = 0
-    document_ids = get_document_names()
+    document_ids, _, _ = get_document_names()
     for document_id in document_ids:
         sentences = get_sentences(document_id)
         for sentence in sentences:
@@ -17,14 +17,14 @@ def create_vocabulary():
                 count = count + 1
                 if word not in tokens:
                     tokens[word] = 1
-                    size = size + 1
                 else:
                     tokens[word] = tokens[word] + 1
 
     vocabulary = {}
-    for index, key in enumerate(tokens.keys()):
+    for key in tokens.keys():
         if tokens[key] > 1:
-            vocabulary[key] = (index, tokens[key])
+            vocabulary[key] = (size, tokens[key])
+            size += 1
     return vocabulary, size, count
 
 
@@ -76,12 +76,12 @@ if __name__ == '__main__':
     negative_samples = 120
 
     print("Defining Model")
-    input_enc, label, neg_samples, prob, embeddings, loss = get_model(negative_samples, dim, v_size)
+    input_enc, label, neg_samples, prob, embeddings, label_log, loss = get_model(negative_samples, dim, v_size)
     print("Defined Model")
     print("Initializing DataHandler")
     data_handler = DataHandler(vocabulary, v_size, v_count, negative_samples, window)
     print("Initialized DataHandler")
     print("Starting training")
-    final_embeddings = run(input_enc, label, neg_samples, prob, embeddings, loss, data_handler)
+    final_embeddings = run(input_enc, label, neg_samples, prob, embeddings, label_log, loss, data_handler)
 
-    np.savetxt('emb.1.w_5.stop_words.neg_120.out', final_embeddings, delimiter=',')
+    np.savetxt('results/emb.1.w_5.stop_words.neg_120.out', final_embeddings, delimiter=',')

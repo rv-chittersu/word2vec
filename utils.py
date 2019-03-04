@@ -16,6 +16,12 @@ def is_valid_token(word):
 
 
 def get_document_names():
+    with open('./vocabs/files.txt', 'r') as f:
+        training, validation, test = f.read().splitlines()
+        return training.split(","), validation.split(","), test.split(",")
+
+
+def get_training_document_names():
     return list(filter(lambda x: re.match(r'^training', x), reuters.fileids()))
 
 

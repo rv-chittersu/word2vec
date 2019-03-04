@@ -1,6 +1,7 @@
 import math
 from input_handler import DataHandler
 import tensorflow as tf
+import numpy as np
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 
@@ -42,10 +43,24 @@ def get_model(neg_samples, embedding_dim, vocab_size):
         norm = tf.sqrt(tf.reduce_sum(tf.square(embedding), 1, keep_dims=True))
         normalized_embeddings = embedding / norm
 
-        return input_token, label, neg_sample_enc, probabilities, normalized_embeddings, loss
+        return input_token, label, neg_sample_enc, probabilities, normalized_embeddings, loss, label_log
 
 
-def run(input_enc, label, neg_samples, prob, embeddings, loss, data_handler: DataHandler):
+def compute_loss(session, data_handler: DataHandler, input_enc, label, label_log, is_validation):
+    docs = data_handler.validation_documents if is_validation else data_handler.test_documents
+    neg_loss = 0
+    count = 0
+    for doc in docs:
+        entries = data_handler.get_next_set(doc)
+        for entry in entries:
+            count += 1
+            neg_loss += np.sum(session.run([label_log], {input_enc: np.full((1, ), entry[0]), label: np.full((1, ), entry[1])}))
+    loss = -1 * neg_loss
+    avg_loss = loss/count
+    print("Avg." + ("validation-" if is_validation else "test-") + "loss@" + str(count) + " - " + str(avg_loss))
+
+
+def run(input_enc, label, neg_samples, prob, embeddings, loss, label_log, data_handler: DataHandler):
     optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
     average_loss = 0
     training_step = 0
@@ -77,8 +92,14 @@ def run(input_enc, label, neg_samples, prob, embeddings, loss, data_handler: Dat
                     average_loss += loss_val
 
                     if training_step % 10000 == 0:
-                        print("Avg.loss@" + str(training_step) + " - " + str(average_loss))
+                        print("Avg.loss@" + str(training_step) + " - " + str(average_loss/10000))
                         average_loss = 0
+
+                    if training_step % 1000000 == 0:
+                        compute_loss(session, data_handler, input_enc, label, label_log, True)
+
+            # report test loss
+        compute_loss(session, data_handler, input_enc, label, label_log, False)
 
         final_embeddings = embeddings.eval()
         return final_embeddings

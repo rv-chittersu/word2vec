@@ -6,6 +6,8 @@ from random import randint
 class DataHandler:
 
     document_ids = None
+    validation_documents = None
+    test_documents = None
     words = None
 
     document_count = 0
@@ -33,7 +35,7 @@ class DataHandler:
         self.window_length = window_length
         self.generate_reverse_vocab()
 
-        self.document_ids = get_document_names()
+        self.document_ids, self.validation_documents, self.test_documents = get_document_names()
         self.document_count = len(self.document_ids)
         self.load_document()
 
@@ -63,8 +65,9 @@ class DataHandler:
         self.words = []
         for sentence in sentences:
             words = get_words(sentence)
+            words = list(filter(lambda x: x in self.vocabulary, words))
             if len(words) != 0:
-                self.words.append(get_words(sentence))
+                self.words.append(words)
 
         self.sentence_count = len(self.words)
         self.word_count = len(self.words[0])
@@ -131,3 +134,26 @@ class DataHandler:
             })
         self.word_index = self.word_index + 1
         return data
+
+    def get_next_set(self, file):
+        sentences = get_sentences(file)
+        doc_words = []
+        for sentence in sentences:
+            words = get_words(sentence)
+            words = list(filter(lambda x: x in self.vocabulary, words))
+            if len(words) != 0:
+                doc_words.append(words)
+
+        result = []
+        for sentence in doc_words:
+            for w_index, word in enumerate(sentence):
+                w_enc = self.vocabulary[word][0]
+                for i in range(max(0, w_index - self.window_length), min(len(sentence), w_index + self.window_length)):
+                    n_enc = self.vocabulary[sentence[i]][0]
+                    result.append((w_enc, n_enc))
+        return result
+
+
+
+
+
