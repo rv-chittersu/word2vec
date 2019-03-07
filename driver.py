@@ -54,6 +54,6 @@ if __name__ == '__main__':
 
     result = compile_results(config, training_stats, test_loss/test_samples, files)
     print(result)
-    with open(key + ".results.txt", "w") as f:
+    with open(config.results_folder + '/' + key + ".results.txt", "w") as f:
         f.write(result)
 
