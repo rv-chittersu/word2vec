@@ -35,10 +35,10 @@ class Config:
             os.makedirs(self.results_folder)
 
         self.embedding_dimensions = config.getint('MODEL_PARAMETERS', 'EmbeddingDimensions', fallback=60)
-        self.negative_samples = config.getint('MODEL_PARAMETERS', None, fallback=120)
-        self.epochs = config.getint('MODEL_PARAMETERS', None, fallback=3)
-        self.learning_rate = config.getfloat('MODEL_PARAMETERS', None, fallback=0.5)
-        self.window_size = config.getint('MODEL_PARAMETERS', None, fallback=5)
+        self.negative_samples = config.getint('MODEL_PARAMETERS', 'NegativeSamples', fallback=120)
+        self.epochs = config.getint('MODEL_PARAMETERS', 'Epochs', fallback=3)
+        self.learning_rate = config.getfloat('MODEL_PARAMETERS', 'LearningRate', fallback=0.5)
+        self.window_size = config.getint('MODEL_PARAMETERS', 'WindowSize', fallback=5)
 
     def __str__(self):
         return "------CONFIG-------\n"\

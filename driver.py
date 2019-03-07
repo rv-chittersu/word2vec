@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     training_stats = []
     files = []
-    for i in range(0, 3):
+    for i in range(0, config.epochs):
         print("==========================")
         print("Starting epoch:" + str(i))
         print("==========================")
