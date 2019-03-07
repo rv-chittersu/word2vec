@@ -1,26 +1,36 @@
-from driver import *
 import sys
+from utils import *
+import numpy as np
 
-embed = np.loadtxt("emb.1.w_5.stop_words.neg_120.out", delimiter=",")
-vocab, _, _ = load_vocabulary('default.stop.vocab')
 
-reverse_vocab = {}
-vocab_list = vocab.keys()
-for key in vocab_list:
-    index = vocab[key][0]
-    reverse_vocab[index] = key
+def generate_reverse_lookup(vocab):
+    reverse_vocab = {}
+    vocab_list = vocab.keys()
+    for key in vocab_list:
+        index = vocab[key][0]
+        reverse_vocab[index] = key
+    return reverse_vocab
 
-word = sys.argv[1]
-word_id = vocab[word][0]
-word_emb = embed[word_id]
-sim = []
 
-print(word_emb)
+if __name__ == '__main__':
 
-for i in embed:
-    sim.append(np.dot(word_emb, i))
+    config = Config('config.ini')
+    vocab, _, _ = get_vocabulary(config)
 
-res = [i[0] for i in sorted(enumerate(sim), key=lambda x:-1*x[1])]
+    reverse_vocab = generate_reverse_lookup(vocab)
 
-for i in range(0, 30):
-    print(reverse_vocab[res[i]])
+    embedding_file_name = sys.argv[1]
+    embeddings = np.loadtxt(embedding_file_name, delimiter=",")
+
+    word = sys.argv[2]
+    word_id = vocab[word][0]
+    word_embedding = embeddings[word_id]
+
+    similarity_array = []
+    for embedding in embeddings:
+        similarity_array.append(np.dot(word_embedding, embedding))
+
+    result = [i[0] for i in sorted(enumerate(similarity_array), key=lambda x:-1*x[1])]
+
+    print("Words similar to " + str(word))
+    print("\n".join(map(lambda x: reverse_vocab[x], result[1:31])))

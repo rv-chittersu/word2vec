@@ -1,87 +1,59 @@
-import argparse
 from utils import *
 from model import *
 import numpy as np
-
-
-def create_vocabulary():
-    tokens = {}
-    size = 0
-    count = 0
-    document_ids, _, _ = get_document_names()
-    for document_id in document_ids:
-        sentences = get_sentences(document_id)
-        for sentence in sentences:
-            words = get_words(sentence)
-            for word in words:
-                count = count + 1
-                if word not in tokens:
-                    tokens[word] = 1
-                else:
-                    tokens[word] = tokens[word] + 1
-
-    vocabulary = {}
-    for key in tokens.keys():
-        if tokens[key] > 1:
-            vocabulary[key] = (size, tokens[key])
-            size += 1
-    return vocabulary, size, count
-
-
-def save_vocabulary(vocabulary, filename):
-    f = open(filename, 'w')
-    for k in vocabulary.keys():
-        f.write(k + "," + str(vocabulary[k][0]) + "," + str(vocabulary[k][1]) + "\n")
-
-
-def load_vocabulary(filename):
-    vocabulary = {}
-    size = 0
-    count = 0
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            elements = line.split(",")
-            if len(elements) != 3:
-                continue
-            vocabulary[elements[0]] = (int(elements[1]), int(elements[2]))
-            size = size + 1
-            count = count + int(elements[2])
-    return vocabulary, size, count
+import random, string
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-V', '--vocabulary-file', dest='vocabulary_file', type=str,
-                        help='input vocabulary file name', default=None)
-    args = parser.parse_args()
 
-    vocabulary = {}
-    v_size = 0
-    v_count = 0
-    if args.vocabulary_file is None:
-        vocabulary, v_size, v_count = create_vocabulary()
-    else:
-        try:
-            vocabulary, v_size, v_count = load_vocabulary(args.vocabulary_file)
-        except FileNotFoundError:
-            vocabulary, v_size, v_count = create_vocabulary()
-            save_vocabulary(vocabulary, args.vocabulary_file)
+    config = Config('config.ini')
+    print(config)
 
-    print("Loaded Vocabulary")
+    key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))  # generate random string
 
-    dim = 60
-    window = 5
-    learning_rate = 0.5
-    negative_samples = 120
+    vocabulary, v_size, v_count = get_vocabulary(config)
 
-    print("Defining Model")
-    input_enc, label, neg_samples, prob, embeddings, label_log, loss = get_model(negative_samples, dim, v_size)
-    print("Defined Model")
-    print("Initializing DataHandler")
-    data_handler = DataHandler(vocabulary, v_size, v_count, negative_samples, window)
-    print("Initialized DataHandler")
-    print("Starting training")
-    final_embeddings = run(input_enc, label, neg_samples, prob, embeddings, label_log, loss, data_handler)
+    model = Model(config, v_size)
 
-    np.savetxt('results/emb.1.w_5.stop_words.neg_120.out', final_embeddings, delimiter=',')
+    print("Initializing DataHandlers")
+    train, validation, test = get_document_names(config)
+    train_data_handler = DataHandler(vocabulary, v_size, v_count, config, train)
+    validation_data_handler = DataHandler(vocabulary, v_size, v_count, config, validation)
+    test_data_handler = DataHandler(vocabulary, v_size, v_count, config, test)
+    print("Initialized DataHandlers")
+
+    training_stats = []
+    files = []
+    for i in range(0, 3):
+        print("==========================")
+        print("Starting epoch:" + str(i))
+        print("==========================")
+
+        total_training_loss, training_samples = model.run(train_data_handler, "train")
+        print(">> Average Training Loss over " + str(training_samples) + "samples - " +
+              str(total_training_loss/training_samples))
+
+        total_validation_loss, validation_samples = model.run(validation_data_handler, "validation")
+        print(">> Average Validation Loss over " + str(validation_samples) + "samples - " +
+              str(total_validation_loss/validation_samples))
+
+        train_data_handler.reset()
+        validation_data_handler.reset()
+
+        embeddings = model.get_embeddings()
+        embedding_file_name = config.results_folder + '/' + key + ".embedding.epoch-" + str(i) + '.out'
+        np.savetxt(embedding_file_name, embeddings, delimiter=',')
+
+        training_stats.append((total_training_loss/training_samples, total_validation_loss/validation_samples))
+        files.append(embedding_file_name)
+
+    test_loss, test_samples = model.run(test_data_handler, "test")
+    print(">> Average Test Loss over " + str(test_samples) + "samples - " + str(test_loss / test_samples))
+
+    model.end_session()
+
+    result = compile_results(config, training_stats, test_loss/test_samples, files)
+    print(result)
+    with open(key + ".results.txt", "w") as f:
+        f.write(result)
+

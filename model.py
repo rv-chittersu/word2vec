@@ -1,105 +1,130 @@
 import math
 from input_handler import DataHandler
 import tensorflow as tf
-import numpy as np
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
+tf_config = tf.ConfigProto()
+tf_config.gpu_options.allow_growth = True
 
 
-def get_model(neg_samples, embedding_dim, vocab_size):
-    input_token = tf.placeholder(tf.int32, shape=[1], name='input_token')  # (1)
-    label = tf.placeholder(tf.int32, shape=[1], name='label')  # (1)
-    neg_sample_enc = tf.placeholder(tf.int32, shape=[neg_samples], name='negative_samples')  # (neg_size)
-    probabilities = tf.placeholder(tf.float32, shape=[neg_samples, 1], name='probabilities')  # (neg_size,1)
+class Model:
+    input_placeholder = None
+    label_placeholder = None
+    ns_placeholder = None
+    ns_prob_placeholder = None
+    embedding_variable = None
+    loss = None
 
-    with tf.variable_scope('word2vec'):
-        embedding = tf.Variable(tf.random_uniform([vocab_size, embedding_dim], -1.0, 1.0))  # (v_size, e_size)
-        weights = tf.Variable(tf.truncated_normal([vocab_size, embedding_dim],
-                                                  stddev=1.0/math.sqrt(embedding_dim)))  # (v_size, e_size)
+    optimizer = None
 
-        input_embedding = tf.nn.embedding_lookup(embedding, input_token)  # (e_size,)
-        input_embedding = tf.reshape(input_embedding, [embedding_dim, 1])  # (e_size,1)
+    session = None
 
-        label_tensor = tf.nn.embedding_lookup(weights, label)  # (e_size,)
-        label_tensor = tf.reshape(label_tensor, [embedding_dim, 1])  # (e_size, 1)
+    embedding_dimensions = 0
+    vocabulary_size = 0
+    negative_samples = 0
+    learning_rate = 0
 
-        neg_samples_tensor = tf.nn.embedding_lookup(weights, neg_sample_enc)  # (neg_size, e_size)
+    def __init__(self, config, vocabulary_size):
+        self.embedding_dimensions = config.embedding_dimensions
+        self.negative_samples = config.negative_samples
+        self.vocabulary_size = vocabulary_size
+        self.learning_rate = config.learning_rate
+        self.define_model()
+        self.define_optimizer()
+        self.start_session()
 
-        merge1 = tf.linalg.matmul(label_tensor, input_embedding, transpose_a=True)  # (1,1)
-        merge2 = tf.linalg.matmul(neg_samples_tensor, input_embedding)  # (neg_size, 1)
-        merge2 = tf.math.scalar_mul(-1.0, merge2)  # (neg_size, 1)
+    def define_model(self):
+        input_placeholder = tf.placeholder(tf.int32, shape=[1], name='input_token')  # (1)
+        label_placeholder = tf.placeholder(tf.int32, shape=[1], name='label')  # (1)
+        ns_placeholder = tf.placeholder(tf.int32,
+                                        shape=[self.negative_samples], name='negative_samples')  # (neg_size)
+        ns_prob_placeholder = tf.placeholder(tf.float32,
+                                             shape=[self.negative_samples, 1], name='probabilities')  # (neg_size,1)
 
-        label_sigmoid = tf.sigmoid(merge1)  # (1,1)
-        label_log = tf.log(label_sigmoid)  # (1,1)
+        with tf.variable_scope('word2vec'):
+            embedding = tf.Variable(tf.random_uniform([self.vocabulary_size, self.embedding_dimensions],
+                                                      -1.0, 1.0))  # (v_size, e_size)
+            weights = tf.Variable(tf.truncated_normal([self.vocabulary_size, self.embedding_dimensions],
+                                                      stddev=1.0/math.sqrt(self.embedding_dimensions)))  # (v_size, e_size)
 
-        neg_sample_sigmoid = tf.sigmoid(merge2)  # (neg_size, 1)
-        neg_samples_log = tf.log(neg_sample_sigmoid)  # (neg_size, 1)
+            input_embedding = tf.nn.embedding_lookup(embedding, input_placeholder)  # (e_size,)
+            input_embedding = tf.reshape(input_embedding, [self.embedding_dimensions, 1])  # (e_size,1)
 
-        expected_neg_sample = tf.linalg.matmul(neg_samples_log, probabilities, transpose_a=True)  # (1,1)
+            label_tensor = tf.nn.embedding_lookup(weights, label_placeholder)  # (e_size,)
+            label_tensor = tf.reshape(label_tensor, [self.embedding_dimensions, 1])  # (e_size, 1)
 
-        result = label_log + expected_neg_sample  # (1,1)
-        loss = tf.math.scalar_mul(-1, result)
+            neg_samples_tensor = tf.nn.embedding_lookup(weights, ns_placeholder)  # (neg_size, e_size)
 
-        norm = tf.sqrt(tf.reduce_sum(tf.square(embedding), 1, keep_dims=True))
-        normalized_embeddings = embedding / norm
+            merge1 = tf.linalg.matmul(label_tensor, input_embedding, transpose_a=True)  # (1,1)
+            merge2 = tf.linalg.matmul(neg_samples_tensor, input_embedding)  # (neg_size, 1)
+            merge2 = tf.math.scalar_mul(-1.0, merge2)  # (neg_size, 1)
 
-        return input_token, label, neg_sample_enc, probabilities, normalized_embeddings, loss, label_log
+            label_sigmoid = tf.sigmoid(merge1)  # (1,1)
+            label_log = tf.log(label_sigmoid)  # (1,1)
 
+            neg_sample_sigmoid = tf.sigmoid(merge2)  # (neg_size, 1)
+            neg_samples_log = tf.log(neg_sample_sigmoid)  # (neg_size, 1)
 
-def compute_loss(session, data_handler: DataHandler, input_enc, label, label_log, is_validation):
-    docs = data_handler.validation_documents if is_validation else data_handler.test_documents
-    neg_loss = 0
-    count = 0
-    for doc in docs:
-        entries = data_handler.get_next_set(doc)
-        for entry in entries:
-            count += 1
-            neg_loss += np.sum(session.run([label_log], {input_enc: np.full((1, ), entry[0]), label: np.full((1, ), entry[1])}))
-    loss = -1 * neg_loss
-    avg_loss = loss/count
-    print("Avg." + ("validation-" if is_validation else "test-") + "loss@" + str(count) + " - " + str(avg_loss))
+            expected_neg_sample = tf.linalg.matmul(neg_samples_log, ns_prob_placeholder, transpose_a=True)  # (1,1)
 
+            result = tf.reduce_sum(label_log + expected_neg_sample)  # ()
+            loss = tf.math.scalar_mul(-1, result)  # ()
 
-def run(input_enc, label, neg_samples, prob, embeddings, loss, label_log, data_handler: DataHandler):
-    optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
-    average_loss = 0
-    training_step = 0
-    init = tf.global_variables_initializer()
-    with tf.Session(config=config) as session:
-        session.run(init)
+            norm = tf.sqrt(tf.reduce_sum(tf.square(embedding), 1, keep_dims=True))
+            normalized_embeddings = embedding / norm
 
-        for i in range(0, 3):
-            print("==========================")
-            print("Starting epoch:" + str(i))
-            print("==========================")
-            while True:
-                data = data_handler.get_next()
-                if data is None:
-                    # report final results
-                    data_handler.reset()
-                    break
-                for entry in data:
-                    feed_dict = {
-                        input_enc: entry['word'],
-                        label: entry['label'],
-                        neg_samples: entry['neg'],
-                        prob: entry['prob']
-                    }
+            self.input_placeholder = input_placeholder
+            self.label_placeholder = label_placeholder
+            self.ns_placeholder = ns_placeholder
+            self.ns_prob_placeholder = ns_prob_placeholder
+            self.loss = loss
+            self.embedding_variable = normalized_embeddings
 
-                    training_step += 1
+    def define_optimizer(self):
+        self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.loss)
 
-                    _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
-                    average_loss += loss_val
+    def start_session(self):
+        init = tf.global_variables_initializer()
+        self.session = tf.Session(config=tf_config)
+        self.session.run(init)
 
-                    if training_step % 10000 == 0:
-                        print("Avg.loss@" + str(training_step) + " - " + str(average_loss/10000))
-                        average_loss = 0
+    def end_session(self):
+        self.session.close()
 
-                    if training_step % 1000000 == 0:
-                        compute_loss(session, data_handler, input_enc, label, label_log, True)
+    def get_embeddings(self):
+        return self.embedding_variable.eval()
 
-            # report test loss
-        compute_loss(session, data_handler, input_enc, label, label_log, False)
+    def run(self, data_handler: DataHandler, mode):
+        total_loss_value = 0
+        loss_value = 0
+        total_samples = 0
+        print_counter = 0
 
-        final_embeddings = embeddings.eval()
-        return final_embeddings
+        while True:
+
+            data = data_handler.get_next()
+            if data is None:
+                # data exhausted
+                print("avg. " + mode + "-loss@step-" + str(total_samples) + " - " + str(loss_value / print_counter))
+                return total_loss_value, total_samples
+
+            for entry in data:
+                feed_dict = {
+                    self.input_placeholder: entry['word'],
+                    self.label_placeholder: entry['label'],
+                    self.ns_placeholder: entry['neg'],
+                    self.ns_prob_placeholder: entry['prob']
+                }
+                if mode == "train":
+                    _, loss = self.session.run([self.optimizer, self.loss], feed_dict)
+                else:
+                    loss = self.session.run([self.loss, feed_dict])
+
+                loss_value += loss
+                total_loss_value += loss
+
+                total_samples += 1
+                print_counter += 1
+
+                if print_counter == 10000:
+                    print("avg. " + mode + "-loss@step-" + str(total_samples) + " - " + str(loss_value / print_counter))
+                    print_counter = 0
+                    loss_value = 0

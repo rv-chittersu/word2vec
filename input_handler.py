@@ -26,16 +26,16 @@ class DataHandler:
     word_occurrences_count = 0
     reverse_vocab = None
 
-    def __init__(self, vocabulary, vocabulary_size, word_occurrences_count, negative_samples, window_length):
+    def __init__(self, vocabulary, vocabulary_size, word_occurrences_count, config, file_set):
 
         self.vocabulary = vocabulary
         self.vocabulary_size = vocabulary_size
         self.word_occurrences_count = word_occurrences_count
-        self.negative_samples = negative_samples
-        self.window_length = window_length
+        self.negative_samples = config.negative_samples
+        self.window_length = config.window_size
         self.generate_reverse_vocab()
 
-        self.document_ids, self.validation_documents, self.test_documents = get_document_names()
+        self.document_ids = file_set
         self.document_count = len(self.document_ids)
         self.load_document()
 
@@ -111,8 +111,7 @@ class DataHandler:
         s_index = self.sentence_index
 
         temp = self.words[s_index]
-        # print(str(w_index) + " " + str(s_index) + " " + str(self.word_count) + " " + str(self.sentence_count))
-        # print(" ".join(self.words[s_index]))
+
         word = temp[w_index]
         neighbours = []
         for i in range(max(0, w_index - self.window_length), min(self.word_count, w_index + self.window_length)):
@@ -134,26 +133,3 @@ class DataHandler:
             })
         self.word_index = self.word_index + 1
         return data
-
-    def get_next_set(self, file):
-        sentences = get_sentences(file)
-        doc_words = []
-        for sentence in sentences:
-            words = get_words(sentence)
-            words = list(filter(lambda x: x in self.vocabulary, words))
-            if len(words) != 0:
-                doc_words.append(words)
-
-        result = []
-        for sentence in doc_words:
-            for w_index, word in enumerate(sentence):
-                w_enc = self.vocabulary[word][0]
-                for i in range(max(0, w_index - self.window_length), min(len(sentence), w_index + self.window_length)):
-                    n_enc = self.vocabulary[sentence[i]][0]
-                    result.append((w_enc, n_enc))
-        return result
-
-
-
-
-
