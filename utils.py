@@ -30,7 +30,7 @@ def get_document_names(config: Config):
 
 def get_vocabulary(config: Config):
     try:
-        load_vocabulary(config.vocabulary_sourcefile)
+        return load_vocabulary(config.vocabulary_sourcefile)
     except FileNotFoundError:
         raise Exception(config.files_split_sourcefile + "(source vocabulary file) doesn't exist.\n"
                         + "Lookup readme for more info\n")

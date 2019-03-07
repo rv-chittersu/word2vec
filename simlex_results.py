@@ -30,6 +30,8 @@ def get_scores(vocab, embeddings, category, threshold):
 
             embed_score = get_embed_score(embeddings, vocab[w1][0], vocab[w2][0])
 
+            # print(w1 + " " + w2 + " " + str(simlex_score) + " " + str(embed_score))
+
             simlex_vector.append(float(simlex_score))
             embed_vector.append(embed_score)
 
@@ -44,9 +46,10 @@ if __name__ == '__main__':
 
     threshold = None
     if len(sys.argv) > 3:
-        threshold = sys.argv[3]
+        threshold = int(sys.argv[3])
 
     embedding_file_name = sys.argv[1]
+    embeddings = np.loadtxt(embedding_file_name, delimiter=",")
 
     category = sys.argv[2]
 
