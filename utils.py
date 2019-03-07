@@ -116,7 +116,7 @@ def load_vocabulary(filename):
 def compile_results(config, training_stats, avg_test_loss, files):
     return str(config)\
            + "Training stats per epoch\n"\
-           + "\n".join(map(lambda x: "Avg. Training Loss - " + str(x[0]) + " Avg. Validation Loss - " + str(x[1]), training_stats))\
-           + "Avg Test Loss - " + avg_test_loss + "\n\n"\
+           + "\n".join(map(lambda x: "Avg. Training Loss - " + str(x[0]) + " Avg. Validation Loss - " + str(x[1]), training_stats)) + "\n\n"\
+           + "Avg Test Loss - " + str(avg_test_loss) + "\n\n"\
            + "Embeddings Generated\n"\
            + "\n".join(files)

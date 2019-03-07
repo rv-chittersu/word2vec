@@ -90,7 +90,7 @@ class Model:
         self.session.close()
 
     def get_embeddings(self):
-        return self.embedding_variable.eval()
+        return self.embedding_variable.eval(session=self.session)
 
     def run(self, data_handler: DataHandler, mode):
         total_loss_value = 0
@@ -116,7 +116,7 @@ class Model:
                 if mode == "train":
                     _, loss = self.session.run([self.optimizer, self.loss], feed_dict)
                 else:
-                    loss = self.session.run([self.loss, feed_dict])
+                    [loss] = self.session.run([self.loss], feed_dict)
 
                 loss_value += loss
                 total_loss_value += loss

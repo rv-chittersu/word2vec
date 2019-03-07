@@ -30,11 +30,11 @@ if __name__ == '__main__':
         print("==========================")
 
         total_training_loss, training_samples = model.run(train_data_handler, "train")
-        print(">> Average Training Loss over " + str(training_samples) + "samples - " +
+        print(">> Average Training Loss over " + str(training_samples) + " samples - " +
               str(total_training_loss/training_samples))
 
         total_validation_loss, validation_samples = model.run(validation_data_handler, "validation")
-        print(">> Average Validation Loss over " + str(validation_samples) + "samples - " +
+        print(">> Average Validation Loss over " + str(validation_samples) + " samples - " +
               str(total_validation_loss/validation_samples))
 
         train_data_handler.reset()
