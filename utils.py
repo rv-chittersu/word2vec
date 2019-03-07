@@ -1,5 +1,6 @@
 import nltk
 import re
+import random
 from nltk.corpus import reuters
 from nltk.tokenize import sent_tokenize
 from nltk.corpus import stopwords
@@ -38,6 +39,8 @@ def get_vocabulary(config: Config):
 def split_corpus():
     training_files = get_training_document_names()
     test_ids = get_test_document_names()
+
+    random.shuffle(training_files)
 
     training_ids = training_files[: int(0.9*len(training_files))]
     validation_ids = training_files[int(0.9*len(training_files)):]
