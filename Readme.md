@@ -1,5 +1,5 @@
-# word2vec skipgram Model
-This work is done as part of [assignment](https://sites.google.com/site/2019e1246/schedule/assignment-1) for [E1 246: Natural Language Understanding (2019)](https://sites.google.com/site/2019e1246/basics). The report fot the same can be found [here]()
+# word2vec skipgram model
+This work is done as part of [assignment](https://sites.google.com/site/2019e1246/schedule/assignment-1) for [E1 246: Natural Language Understanding (2019)](https://sites.google.com/site/2019e1246/basics). The report for the same can be found [here]()
 
 ## Data
 NLTK's Reuters dataset is used to train the skipgram model.
@@ -51,7 +51,7 @@ The files generated on each run will have unique **key**
 
 The following files will be generated in after training
 * embedding file of form **[key].embedding.epoch-[epoch-no].out**
-* results file(which have concise information of the run) of form *[key].results.txt*
+* results file(which have concise information of the run) of form **[key].results.txt**
 
 ## Config File
 

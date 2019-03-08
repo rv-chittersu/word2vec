@@ -58,4 +58,3 @@ if __name__ == '__main__':
     print(result)
     with open(config.results_folder + '/' + key + ".results.txt", "w") as f:
         f.write(result)
-
