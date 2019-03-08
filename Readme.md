@@ -44,6 +44,14 @@ This folder holds pre-generated data which is necessary for training the model.
 **similar_words.py** generates similar words for a given word based on embeddings.<br>
 **simlex_results.py** calculates co-relation between simlex-999 scores and model's similarity score.
 
+### Results
+
+The files generated in a run are stored in *ResultsDirectory* specified in configs file<br> 
+The files generated on each run will have unique **key**
+The following files will be generated in after training
+* embedding file of form **[key].embedding.epoch-[epoch-no].out**
+* results file(which have concise information of the run) of form *[key].results.txt*
+
 ## Config File
 
 ```
