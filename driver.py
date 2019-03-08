@@ -11,6 +11,7 @@ if __name__ == '__main__':
     print(config)
 
     key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))  # generate random string
+    print("Key - " + key)
 
     vocabulary, v_size, v_count = get_vocabulary(config)
 
