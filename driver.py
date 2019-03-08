@@ -1,7 +1,8 @@
 from utils import *
 from model import *
 import numpy as np
-import random, string
+import random
+import string
 
 
 if __name__ == '__main__':

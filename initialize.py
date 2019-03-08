@@ -1,8 +1,13 @@
 from utils import *
 import sys
+import nltk
 
 
 if __name__ == '__main__':
+
+    nltk.download("punkt")
+    nltk.download("reuters")
+    nltk.download("stopwords")
 
     if len(sys.argv) < 3:
         print("Expected 2 arguments but found " + str(len(sys.argv) - 1))
