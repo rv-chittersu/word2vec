@@ -5,12 +5,13 @@ import nltk
 
 if __name__ == '__main__':
 
+    print("Downloading nltk corpus")
     nltk.download("punkt")
     nltk.download("reuters")
     nltk.download("stopwords")
+    print("Download successful")
 
     if len(sys.argv) < 3:
-        print("Expected 2 arguments but found " + str(len(sys.argv) - 1))
         exit()
 
     split_info_file = sys.argv[1]
