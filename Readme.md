@@ -27,30 +27,20 @@ simlex_results.py
 
 This folder holds pre-generated data which is necessary for training the model. 
 
-*SimLex-999.txt* is used for evaluation and is downloaded from [here](https://fh295.github.io/simlex.html).
-
-*default.split.txt* contains file ids split for train validation and testing.
-
-*default.vocab* contains vocabulary generated on training data.
-
+*SimLex-999.txt* is used for evaluation and is downloaded from [here](https://fh295.github.io/simlex.html).<br>
+*default.split.txt* contains file ids split for train validation and testing.<br>
+*default.vocab* contains vocabulary generated on training data.<br>
 *Note:* New training splits and vocabulary can be generated from *initialize.py*
 
 ### Code
 
-*initialize.py* downloads nltk corpus. With arguments it can be used to generate training-validation split and vocabulary
-
-*driver.py* contains main function for training the model.
-
-*model.py* holds logic for word2vec skipgram model
-
-*data_handler.py* is for generating inputs for model from corpus.
-
-*config_handler.py* is interface for reading config file
-
-*utils.py* has implementation of functions used by other files.
-
-*similar_words.py* generates similar words for a given word based on embeddings
-
+*initialize.py* downloads nltk corpus. With arguments it can be used to generate training-validation split and vocabulary<br>
+*driver.py* contains main function for training the model.<br>
+*model.py* holds logic for word2vec skipgram model.<br>
+*data_handler.py* is for generating inputs for model from corpus.<br>
+*config_handler.py* is interface for reading config file.<br>
+*utils.py* has implementation of functions used by other files.<br>
+*similar_words.py* generates similar words for a given word based on embeddings.<br>
 *simlex_results.py* calculates co-relation between simlex-999 scores and model's similarity score.
 
 ## Config File
@@ -80,7 +70,7 @@ python driver.py
 ``` 
 
 ### Generate new training split
-*filename1* - holds file ids split for training validation and test
+*filename1* - holds file ids split for training validation and test<br>
 *filename2* - has vocabulary generated from train set.
 ```
 python initialize.py filename1 filename2
@@ -104,10 +94,8 @@ During training and testing is done the embeddings at each epoch are written int
 
 ### Finding k similar words
 
-*param1* - embedding file
-
-*param2* - token
-
+*param1* - embedding file<br>
+*param2* - token<br>
 *param3* - output count
 
 ```
@@ -116,10 +104,8 @@ python similar_words.py embedding.out oil 10
 
 ### Co-relation score
 
-*param1* - embedding file
-
-*param2* - parts of speech (N/V/A)
-
+*param1* - embedding file<br>
+*param2* - parts of speech (N/V/A)<br>
 *param3* - threshold (minimum occurrences in training set) -optional
 ```
 python simlex_results.py results/emb.out N 100
