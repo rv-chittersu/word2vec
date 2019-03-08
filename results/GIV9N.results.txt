@@ -1,0 +1,21 @@
+------CONFIG-------
+project-path - .
+data-split-info - ./vocabs/default.split.txt
+source-vocabulary - ./vocabs/default.vocab
+embedding-dimensions - 60
+negative-samples - 120
+epochs - 3
+learning-rate - 0.5
+window-size - 5
+
+Training stats per epoch
+Avg. Training Loss - 0.06277786587495339 Avg. Validation Loss - 0.04822330355963612
+Avg. Training Loss - 0.042655898250331746 Avg. Validation Loss - 0.04687482287792509
+Avg. Training Loss - 0.04146350439135372 Avg. Validation Loss - 0.04693508577601106
+
+Avg Test Loss - 0.047653902591676026
+
+Embeddings Generated
+./results/GIV9N.embedding.epoch-0.out
+./results/GIV9N.embedding.epoch-1.out
+./results/GIV9N.embedding.epoch-2.out
