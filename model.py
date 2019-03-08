@@ -1,5 +1,5 @@
 import math
-from input_handler import DataHandler
+from data_handler import DataHandler
 import tensorflow as tf
 tf_config = tf.ConfigProto()
 tf_config.gpu_options.allow_growth = True

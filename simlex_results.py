@@ -14,7 +14,7 @@ def get_scores(vocab, embeddings, category, threshold):
     simlex_vector = []
     embed_vector = []
 
-    with open("SimLex-999.txt") as tsv:
+    with open("data/SimLex-999.txt") as tsv:
         for line in csv.reader(tsv, dialect="excel-tab"):
             w1 = line[0]
             w2 = line[1]

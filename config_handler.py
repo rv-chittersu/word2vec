@@ -26,9 +26,9 @@ class Config:
         self.project_path = config.get('LOCATIONS', 'ProjectLocation', fallback='.')
 
         self.files_split_sourcefile = self.project_path + '/' + config.get('LOCATIONS', 'DataFileNamesSplit',
-                                                                           fallback='vocabs/default.split.txt')
+                                                                           fallback='data/default.split.txt')
         self.vocabulary_sourcefile = self.project_path + '/' + config.get('LOCATIONS', 'VocabularySource',
-                                                                          fallback='vocabs/default.vocab')
+                                                                          fallback='data/default.vocab')
         self.results_folder = self.project_path + '/' + config.get('LOCATIONS', 'ResultsDirectory',
                                                                    fallback='results')
         if not os.path.exists(self.results_folder):
