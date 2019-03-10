@@ -21,7 +21,7 @@ def get_scores(vocab, embeddings, category, threshold):
             pos = line[2]
             simlex_score = line[3]
 
-            if pos != category:
+            if category is not None and pos != category:
                 continue
             if w1 not in vocab or w2 not in vocab:
                 continue
@@ -36,7 +36,8 @@ def get_scores(vocab, embeddings, category, threshold):
             embed_vector.append(embed_score)
 
     print(len(embed_vector))
-    print(pearsonr(simlex_vector, embed_vector))
+    score = pearsonr(simlex_vector, embed_vector)[0]
+    print("Count - " + str(len(embed_vector)) + (" Type - " + category if category is not None else "") + " Score - " + str(score))
 
 
 if __name__ == '__main__':
@@ -45,12 +46,14 @@ if __name__ == '__main__':
     vocab, _, _ = get_vocabulary(config)
 
     threshold = None
-    if len(sys.argv) > 3:
-        threshold = int(sys.argv[3])
+    if len(sys.argv) > 2:
+        threshold = int(sys.argv[2])
 
     embedding_file_name = sys.argv[1]
     embeddings = np.loadtxt(embedding_file_name, delimiter=",")
 
-    category = sys.argv[2]
+    get_scores(vocab, embeddings, "N", threshold)
+    get_scores(vocab, embeddings, "V", threshold)
+    get_scores(vocab, embeddings, "A", threshold)
+    get_scores(vocab, embeddings, None, threshold)
 
-    get_scores(vocab, embeddings, category, threshold)

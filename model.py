@@ -36,14 +36,14 @@ class Model:
         label_placeholder = tf.placeholder(tf.int32, shape=[1], name='label')  # (1)
         ns_placeholder = tf.placeholder(tf.int32,
                                         shape=[self.negative_samples], name='negative_samples')  # (neg_size)
-        ns_prob_placeholder = tf.placeholder(tf.float32,
+        ns_prob_placeholder = tf.placeholder(tf.float64,
                                              shape=[self.negative_samples, 1], name='probabilities')  # (neg_size,1)
 
         with tf.variable_scope('word2vec'):
             embedding = tf.Variable(tf.random_uniform([self.vocabulary_size, self.embedding_dimensions],
-                                                      -1.0, 1.0))  # (v_size, e_size)
+                                                      -1.0, 1.0, dtype=tf.float64))  # (v_size, e_size)
             weights = tf.Variable(tf.truncated_normal([self.vocabulary_size, self.embedding_dimensions],
-                                                      stddev=1.0/math.sqrt(self.embedding_dimensions)))  # (v_size, e_size)
+                                                      stddev=1.0/math.sqrt(self.embedding_dimensions), dtype=tf.float64))  # (v_size, e_size)
 
             input_embedding = tf.nn.embedding_lookup(embedding, input_placeholder)  # (e_size,)
             input_embedding = tf.reshape(input_embedding, [self.embedding_dimensions, 1])  # (e_size,1)
