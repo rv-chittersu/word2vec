@@ -8,6 +8,9 @@ from config_handler import Config
 stopWords = set(stopwords.words('english'))
 
 
+# False for lt as it's encoding issue.
+# False for stop words
+# False words less than size 2
 def is_valid_token(word):
     if word in stopWords:
         return False
@@ -18,6 +21,7 @@ def is_valid_token(word):
     return True
 
 
+# get training validation and test split
 def get_document_names(config: Config):
     try:
         with open(config.files_split_sourcefile, 'r') as f:
@@ -28,6 +32,7 @@ def get_document_names(config: Config):
                                                       + "Lookup readme for more info\n")
 
 
+# gets vocab from source mentioned in config
 def get_vocabulary(config: Config):
     try:
         return load_vocabulary(config.vocabulary_sourcefile)
@@ -36,6 +41,7 @@ def get_vocabulary(config: Config):
                         + "Lookup readme for more info\n")
 
 
+# split corpus to generate training and validation documents
 def split_corpus():
     training_files = get_training_document_names()
     test_ids = get_test_document_names()
@@ -61,6 +67,8 @@ def get_sentences(document_id):
     return sent_tokenize(raw.replace("\n", ".\n", 1))
 
 
+# replace non alphabets with spaces
+# tokenize -> strip -> lowercase and check if it's valid word.
 def get_words(sentence):
     sentence = re.sub(r'[^a-zA-Z.]', ' ', sentence)
     words = nltk.word_tokenize(sentence)

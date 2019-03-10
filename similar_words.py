@@ -3,6 +3,7 @@ from utils import *
 import numpy as np
 
 
+# return tokenid->word mapping
 def generate_reverse_lookup(vocab):
     reverse_vocab = {}
     vocab_list = vocab.keys()

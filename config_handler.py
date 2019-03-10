@@ -46,6 +46,7 @@ class Config:
         self.learning_rate = config.getfloat('MODEL_PARAMETERS', 'LearningRate', fallback=0.5)
         self.window_size = config.getint('MODEL_PARAMETERS', 'WindowSize', fallback=5)
 
+    # print the config file
     def __str__(self):
         return "------CONFIG-------\n"\
                + "project-path - " + self.project_path + "\n"\

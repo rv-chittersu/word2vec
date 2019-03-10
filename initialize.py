@@ -14,6 +14,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 3:
         exit()
 
+    # creating training validation split and vocabulary
     split_info_file = sys.argv[1]
     vocab_file = sys.argv[2]
 

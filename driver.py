@@ -13,8 +13,10 @@ if __name__ == '__main__':
     key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))  # generate random string
     print("Key - " + key)
 
+    # get vocabulary
     vocabulary, v_size, v_count = get_vocabulary(config)
 
+    # get model
     model = Model(config, v_size)
 
     print("Initializing DataHandlers")
@@ -30,11 +32,11 @@ if __name__ == '__main__':
         print("==========================")
         print("Starting epoch:" + str(i))
         print("==========================")
-
+        # training phase
         total_training_loss, training_samples = model.run(train_data_handler, "train")
         print(">> Average Training Loss over " + str(training_samples) + " samples - " +
               str(total_training_loss/training_samples))
-
+        # validation phase
         total_validation_loss, validation_samples = model.run(validation_data_handler, "validation")
         print(">> Average Validation Loss over " + str(validation_samples) + " samples - " +
               str(total_validation_loss/validation_samples))
@@ -53,7 +55,7 @@ if __name__ == '__main__':
     print(">> Average Test Loss over " + str(test_samples) + "samples - " + str(test_loss / test_samples))
 
     model.end_session()
-
+    # printing all the results to results.txt file
     result = compile_results(config, training_stats, test_loss/test_samples, files)
     print(result)
     with open(config.results_folder + '/' + key + ".results.txt", "w") as f:

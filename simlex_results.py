@@ -30,8 +30,6 @@ def get_scores(dataset, vocab, embeddings, category, threshold):
 
             embed_score = get_embed_score(embeddings, vocab[w1][0], vocab[w2][0])
 
-            # print(w1 + " " + w2 + " " + str(simlex_score) + " " + str(embed_score))
-
             simlex_vector.append(float(simlex_score))
             embed_vector.append(embed_score)
 

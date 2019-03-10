@@ -53,14 +53,14 @@ class Model:
 
             neg_samples_tensor = tf.nn.embedding_lookup(weights, ns_placeholder)  # (neg_size, e_size)
 
-            merge1 = tf.linalg.matmul(label_tensor, input_embedding, transpose_a=True)  # (1,1)
-            merge2 = tf.linalg.matmul(neg_samples_tensor, input_embedding)  # (neg_size, 1)
-            merge2 = tf.math.scalar_mul(-1.0, merge2)  # (neg_size, 1)
+            input_label_dot = tf.linalg.matmul(label_tensor, input_embedding, transpose_a=True)  # (1,1)
+            input_neg_samples_dot = tf.linalg.matmul(neg_samples_tensor, input_embedding)  # (neg_size, 1)
+            input_neg_samples_dot = tf.math.scalar_mul(-1.0, input_neg_samples_dot)  # (neg_size, 1)
 
-            label_sigmoid = tf.sigmoid(merge1)  # (1,1)
+            label_sigmoid = tf.sigmoid(input_label_dot)  # (1,1)
             label_log = tf.log(label_sigmoid)  # (1,1)
 
-            neg_sample_sigmoid = tf.sigmoid(merge2)  # (neg_size, 1)
+            neg_sample_sigmoid = tf.sigmoid(input_neg_samples_dot)  # (neg_size, 1)
             neg_samples_log = tf.log(neg_sample_sigmoid)  # (neg_size, 1)
 
             expected_neg_sample = tf.linalg.matmul(neg_samples_log, ns_prob_placeholder, transpose_a=True)  # (1,1)
