@@ -11,6 +11,7 @@ data/
 - default.split.txt
 - default.vocab
 - SimLex-999.txt
+- questions-words.txt
 results/
 config.ini
 initialize.py
@@ -21,6 +22,8 @@ config_handler.py
 utils.py
 similar_words.py
 simlex_results.py
+analogical_task.py
+report.pdf
 ```
 
 ### Data
@@ -28,6 +31,7 @@ simlex_results.py
 This folder holds pre-generated data which is necessary for training the model. 
 
 **SimLex-999.txt** is used for evaluation and is downloaded from [here](https://fh295.github.io/simlex.html).<br>
+**questions-words.txt** is used to evaluate analogical reasoning task.
 **default.split.txt** contains file ids split for train validation and testing.<br>
 **default.vocab** contains vocabulary generated on training data.<br>
 
@@ -43,7 +47,7 @@ This folder holds pre-generated data which is necessary for training the model.
 **utils.py** has implementation of functions used by other files.<br>
 **similar_words.py** generates similar words for a given word based on embeddings.<br>
 **simlex_results.py** calculates co-relation between simlex-999 scores and model's similarity score.
-
+**analogical_task.py** calculates score in analogical reasoning task
 ### Results
 
 The files generated in a run are stored in *ResultsDirectory* specified in configs file<br> 
@@ -60,6 +64,8 @@ The following files will be generated in after training
 ProjectLocation = .
 VocabularySource = data/default.vocab
 DataFileNamesSplit = data/default.split.txt
+AnalogyDataset = data/questions-words.txt
+ResultsDirectory = results
 ResultsDirectory = results
 
 [MODEL_PARAMETERS]
@@ -115,8 +121,16 @@ python similar_words.py embedding.out oil 10
 ### Co-relation score
 
 *param1* - embedding file<br>
-*param2* - parts of speech (N/V/A)<br>
-*param3* - threshold (minimum occurrences in training set) -optional
+*param2* - threshold (minimum occurrences in training set) -optional
 ```
 python simlex_results.py results/emb.out N 100
+```
+
+### Analytical Reasoning Task
+
+*param1* - embedding file<br>
+*param2* - threshold (minimum occurrences in training set) -optional
+```
+python analogical_task.py results/emb.out N 100
+
 ```
