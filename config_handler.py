@@ -9,6 +9,8 @@ class Config:
     files_split_sourcefile = None
     vocabulary_sourcefile = None
     results_folder = None
+    simlex_dataset = None
+    analogy_dataset = None
 
     embedding_dimensions = 60
     negative_samples = 120
@@ -29,6 +31,10 @@ class Config:
                                                                            fallback='data/default.split.txt')
         self.vocabulary_sourcefile = self.project_path + '/' + config.get('LOCATIONS', 'VocabularySource',
                                                                           fallback='data/default.vocab')
+        self.analogy_dataset = self.project_path + '/' + config.get('LOCATIONS', 'AnalogyDataset',
+                                                                   fallback='data/questions-words.txt')
+        self.simlex_dataset = self.project_path + '/' + config.get('LOCATIONS', 'SimLexDataset',
+                                                                    fallback='data/SimLex-999.txt')
         self.results_folder = self.project_path + '/' + config.get('LOCATIONS', 'ResultsDirectory',
                                                                    fallback='results')
         if not os.path.exists(self.results_folder):
@@ -44,7 +50,9 @@ class Config:
         return "------CONFIG-------\n"\
                + "project-path - " + self.project_path + "\n"\
                + "data-split-info - " + self.files_split_sourcefile + "\n"\
-               + "source-vocabulary - " + self.vocabulary_sourcefile + "\n"\
+               + "source-vocabulary - " + self.vocabulary_sourcefile + "\n" \
+               + "simlex-dataset - " + self.simlex_dataset + "\n" \
+               + "analogy-dataset - " + self.analogy_dataset + "\n" \
                + "embedding-dimensions - " + str(self.embedding_dimensions) + "\n"\
                + "negative-samples - " + str(self.negative_samples) + "\n"\
                + "epochs - " + str(self.epochs) + "\n"\

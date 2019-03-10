@@ -9,12 +9,12 @@ def get_embed_score(embed, index1, index2):
     return np.dot(embed[index1], embed[index2])
 
 
-def get_scores(vocab, embeddings, category, threshold):
+def get_scores(dataset, vocab, embeddings, category, threshold):
 
     simlex_vector = []
     embed_vector = []
 
-    with open("data/SimLex-999.txt") as tsv:
+    with open(dataset) as tsv:
         for line in csv.reader(tsv, dialect="excel-tab"):
             w1 = line[0]
             w2 = line[1]
@@ -52,8 +52,8 @@ if __name__ == '__main__':
     embedding_file_name = sys.argv[1]
     embeddings = np.loadtxt(embedding_file_name, delimiter=",")
 
-    get_scores(vocab, embeddings, "N", threshold)
-    get_scores(vocab, embeddings, "V", threshold)
-    get_scores(vocab, embeddings, "A", threshold)
-    get_scores(vocab, embeddings, None, threshold)
+    get_scores(config.simlex_dataset, vocab, embeddings, "N", threshold)
+    get_scores(config.simlex_dataset, vocab, embeddings, "V", threshold)
+    get_scores(config.simlex_dataset, vocab, embeddings, "A", threshold)
+    get_scores(config.simlex_dataset, vocab, embeddings, None, threshold)
 

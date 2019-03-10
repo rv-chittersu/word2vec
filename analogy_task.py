@@ -64,6 +64,6 @@ if __name__ == "__main__":
 
     embedding_file_name = sys.argv[1]
     embeddings = np.loadtxt(embedding_file_name, delimiter=",")
-    compute_scores('data/questions-words.txt', vocab, embeddings, threshold)
+    compute_scores(config.analogy_dataset, vocab, embeddings, threshold)
 
 
