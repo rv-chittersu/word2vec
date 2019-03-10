@@ -26,7 +26,7 @@ def compute_scores(file, vocab, embeddings, threshold):
                 name = line.split(": ")[1]
                 # print(name)
                 if task_name is not None and count > 0:
-                    print(task_name + "," + str(score/count) + "," + str(count))
+                    print(task_name + "," + str(score/count))
                     score = 0
                     count = 0
                 task_name = name
@@ -50,7 +50,7 @@ def compute_scores(file, vocab, embeddings, threshold):
             score += res
             count += 1
         if count > 0:
-            print(task_name + "," + str(score / count) + "," + str(count))
+            print(task_name + "," + str(score / count))
 
 
 if __name__ == "__main__":
