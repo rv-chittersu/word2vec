@@ -123,7 +123,7 @@ python similar_words.py embedding.out oil 10
 *param1* - embedding file<br>
 *param2* - threshold (minimum occurrences in training set) -optional
 ```
-python simlex_results.py results/emb.out N 100
+python simlex_results.py results/emb.out 100
 ```
 
 ### Analytical Reasoning Task
@@ -131,6 +131,6 @@ python simlex_results.py results/emb.out N 100
 *param1* - embedding file<br>
 *param2* - threshold (minimum occurrences in training set) -optional
 ```
-python analogical_task.py results/emb.out N 100
+python analogical_task.py results/emb.out 50
 
 ```
