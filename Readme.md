@@ -23,6 +23,7 @@ utils.py
 similar_words.py
 simlex_results.py
 analogical_task.py
+requirements.txt
 report.pdf
 ```
 
@@ -77,6 +78,13 @@ WindowSize = 5
 ```
 
 ## How to Run
+
+create a python3 virtual environment.<br>
+In the virtual environment run following to install required packages
+
+```bash
+pip3 install -r requirements.txt
+```
 
 ### Run on available dataset
 verify that files in config are present and run following commands from project folder
