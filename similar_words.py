@@ -16,7 +16,7 @@ def generate_reverse_lookup(vocab):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        print("Expected at least 3 arguments")
+        print("Expected at least 2 arguments")
         exit()
 
     k = 30
