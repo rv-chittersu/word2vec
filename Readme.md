@@ -47,7 +47,7 @@ This folder holds pre-generated data which is necessary for training the model.
 **config_handler.py** is interface for reading config file.<br>
 **utils.py** has implementation of functions used by other files.<br>
 **similar_words.py** generates similar words for a given word based on embeddings.<br>
-**simlex_results.py** calculates co-relation between simlex-999 scores and model's similarity score.
+**simlex_results.py** calculates co-relation between simlex-999 scores and model's similarity score.<br>
 **analogical_task.py** calculates score in analogical reasoning task
 ### Results
 
@@ -66,7 +66,7 @@ ProjectLocation = .
 VocabularySource = data/default.vocab
 DataFileNamesSplit = data/default.split.txt
 AnalogyDataset = data/questions-words.txt
-ResultsDirectory = results
+SimLexDataset = data/SimLex-999.txt
 ResultsDirectory = results
 
 [MODEL_PARAMETERS]
